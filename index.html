@@ -1,73 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Lecture Loading Monitor</title>
-<style>
-  body { font-family: Arial, sans-serif; margin:20px; background:#f5f5f5; }
-  .banner { padding:10px; margin:10px 0; border-radius:5px; }
-  .success { background:#d4edda; color:#155724; }
-  .error { background:#f8d7da; color:#721c24; }
-  .timetable { display:grid; grid-template-columns: 80px repeat(7,1fr); border:1px solid #ccc; margin-top:10px; }
-  .timetable div { border:1px solid #ccc; padding:4px; min-height:40px; font-size:12px; position:relative; }
-  .header { background:#f0f0f0; font-weight:bold; text-align:center; }
-  .today { background:#ffeeba !important; } /* highlight current day */
-  .lecture-block { border-radius:4px; padding:2px; margin:1px; position:relative; color:#000; font-size:12px; }
-  .lecture-part { background:#b3e5fc; } /* Part-Time */
-  .lecture-full { background:#c8e6c9; } /* Full-Time */
-  .delete-btn { position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; font-size:10px; cursor:pointer; }
-  .btn { padding:6px 12px; margin:5px 0; cursor:pointer; }
-  .selector { margin:10px 0; }
-</style>
+  <meta charset="utf-8" />
+  <title>Lecture Loading Monitor (Firebase)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:20px; background:#f5f5f5; }
+    .banner { padding:10px; margin:10px 0; border-radius:5px; }
+    .success { background:#d4edda; color:#155724; }
+    .error { background:#f8d7da; color:#721c24; }
+    .timetable { display:grid; grid-template-columns: 80px repeat(7,1fr); border:1px solid #ccc; margin-top:10px; }
+    .timetable div { border:1px solid #ccc; padding:4px; min-height:40px; font-size:12px; }
+    .header { background:#f0f0f0; font-weight:bold; text-align:center; }
+    .lecture-block { background:#e0f7fa; border-radius:4px; padding:2px; margin:1px; }
+    .btn { padding:6px 12px; margin:5px 0; cursor:pointer; }
+    .selector { margin:10px 0; }
+  </style>
 </head>
 <body>
-<h2>Lecture Loading Monitor</h2>
-<div id="banner"></div>
+  <h2>Lecture Loading Monitor (Firebase)</h2>
+  <div id="banner"></div>
 
-<div id="loginArea">
-  <button id="loginBtn" class="btn">Admin Login</button>
-</div>
+  <!-- Login Area -->
+  <div id="loginArea">
+    <button id="loginBtn" class="btn">Admin Login</button>
+  </div>
 
-<div id="formArea" style="display:none;">
-  <h3>Add Lecture</h3>
-  <label>Lecturer: <input id="lecturer"></label><br>
-  <label>Status: 
-    <select id="status">
-      <option value="Part-Time">Part-Time</option>
-      <option value="Full-Time">Full-Time</option>
-    </select>
-  </label><br>
-  <label>Subject: <input id="subject"></label><br>
-  <label>Lab: <select id="lab"></select></label><br>
-  <label>Date: <input type="date" id="date"></label><br>
-  <label>Start Time: <input type="time" id="start"></label><br>
-  <label>End Time: <input type="time" id="end"></label><br>
-  <button id="addBtn" class="btn">Add Lecture</button>
-  <button id="logoutBtn" class="btn">Logout</button>
-</div>
+  <!-- Add Lecture Form (hidden by default) -->
+  <div id="formArea" style="display:none;">
+    <h3>Add Lecture</h3>
+    <label>Lecturer: <input id="lecturer"></label><br>
+    <label>Status: 
+      <select id="status">
+        <option value="Part-Time">Part-Time</option>
+        <option value="Full-Time">Full-Time</option>
+      </select>
+    </label><br>
+    <label>Subject: <input id="subject"></label><br>
+    <label>Lab: 
+      <select id="lab"></select>
+    </label><br>
+    <label>Date: <input type="date" id="date"></label><br>
+    <label>Start Time: <input type="time" id="start"></label><br>
+    <label>End Time: <input type="time" id="end"></label><br>
+    <button id="addBtn" class="btn">Add Lecture</button>
+    <button id="logoutBtn" class="btn">Logout</button>
+  </div>
 
-<div class="selector">
-  <h3>View Timetable</h3>
-  <label>Lecturer: <select id="timetableLecturer"></select></label>
-  <label>Month: <input type="month" id="timetableMonth"></label>
-  <label>Week: 
-    <select id="timetableWeek">
-      <option value="">--select--</option>
-      <option value="1">Week 1</option>
-      <option value="2">Week 2</option>
-      <option value="3">Week 3</option>
-      <option value="4">Week 4</option>
-      <option value="5">Week 5</option>
-    </select>
-  </label>
-</div>
+  <!-- Timetable Section -->
+  <div class="selector">
+    <h3>View Timetable</h3>
+    <label>Lecturer: 
+      <select id="timetableLecturer"></select>
+    </label>
+    <label>Month: 
+      <input type="month" id="timetableMonth">
+    </label>
+    <label>Week: 
+      <select id="timetableWeek">
+        <option value="">--select--</option>
+        <option value="1">Week 1</option>
+        <option value="2">Week 2</option>
+        <option value="3">Week 3</option>
+        <option value="4">Week 4</option>
+        <option value="5">Week 5</option>
+      </select>
+    </label>
+    <button id="showWeekBtn" class="btn">Show Week</button>
+  </div>
 
-<div id="timetable"></div>
+  <div id="timetable"></div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 
 <script>
-const ADMIN_PASS = "12345"; 
-let isAdmin = false; 
+const ADMIN_PASS = "12345"; // password for admin login
 
+// list of labs
 const LABS = [
   "L04-003 PCs ASSEMBLY","L04-004 PCs ASSEMBLY","L10-001 CYSOP","L10-003 SWE IOT",
   "L10-004 CISCO","L10-005 CISCO","L10-007 CISCO","L10-009 MARCRAFT & CISCO",
@@ -77,104 +87,89 @@ const LABS = [
   "L15-012 CISCO & PCs ASSEMBLY","L15-013 CSOC"
 ];
 
+// 🔹 Your Firebase Config (copied from Firebase Console)
+const firebaseConfig = {
+  apiKey: "AIzaSyBGB6ZZD-lizjs-9yBlH9nbbNynJhJQV3U",
+  authDomain: "lecture-loading-timetable.firebaseapp.com",
+  databaseURL: "https://lecture-loading-timetable-default-rtdb.firebaseio.com",
+  projectId: "lecture-loading-timetable",
+  storageBucket: "lecture-loading-timetable.firebasestorage.app",
+  messagingSenderId: "406844841291",
+  appId: "1:406844841291:web:09507fd26aff0f1570dcce",
+  measurementId: "G-1MQFFXRQ5L"
+};
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 function el(id){ return document.getElementById(id); }
 function showBanner(msg,type='error'){ el('banner').innerHTML=`<div class="banner ${type}">${msg}</div>`; }
-function load(){ return JSON.parse(localStorage.getItem('lectures')||'[]'); }
-function save(data){ localStorage.setItem('lectures',JSON.stringify(data)); }
-function weekStart(dateStr){ let d=new Date(dateStr); let day=d.getDay(); day=(day+6)%7; d.setDate(d.getDate()-day); d.setHours(0,0,0,0); return d; }
+
+function weekStart(dateStr){
+  let d=new Date(dateStr); let day=d.getDay(); day=(day+6)%7; 
+  d.setDate(d.getDate()-day); d.setHours(0,0,0,0); 
+  return d;
+}
 function hoursBetween(s,e){ let [sh,sm]=s.split(':').map(Number); let [eh,em]=e.split(':').map(Number); return (eh+em/60)-(sh+sm/60); }
 function overlap(s1,e1,s2,e2){ return s1<e2 && s2<e1; }
 function divCell(content,cls=''){ let c=document.createElement('div'); c.className=cls; c.innerHTML=content; return c; }
 
-function initLecturerOptions(){
-  let data=load();
+// Load lecturers into dropdown
+function initLecturerOptions(data){
   let lecturers=[...new Set(data.map(x=>x.lecturer))];
   let sel=el('timetableLecturer'); sel.innerHTML='<option value="">--select--</option>';
   lecturers.forEach(l=>{ let o=document.createElement('option'); o.value=o.text=l; sel.add(o); });
 }
 
-function monthWeekStart(monthStr, weekNum){
-  let [year, month] = monthStr.split('-').map(Number);
-  let firstDay = new Date(year, month-1, 1);
-  let dayOffset = (1 - firstDay.getDay() + 7) % 7; 
-  let weekStartDate = new Date(firstDay);
-  weekStartDate.setDate(firstDay.getDate() + dayOffset + (weekNum-1)*7);
-  return weekStartDate;
-}
-
 function renderTimetable(lecturer, baseDate=null){
   const timetable=el('timetable'); timetable.innerHTML='';
   if(!lecturer) return;
-  const entries=load().filter(x=>x.lecturer===lecturer);
-  if(!entries.length){ timetable.innerHTML='<p>No lectures scheduled.</p>'; return; }
 
-  const weekStartDate = baseDate || weekStart(entries[0].date);
-  const weekEndDate = new Date(weekStartDate); weekEndDate.setDate(weekStartDate.getDate()+6);
-  const entriesInWeek = entries.filter(e => { let d = new Date(e.date); return d >= weekStartDate && d <= weekEndDate; });
+  db.ref("lectures").once("value").then(snapshot=>{
+    const entries = Object.values(snapshot.val()||{}).filter(x=>x.lecturer===lecturer);
+    if(!entries.length){ timetable.innerHTML='<p>No lectures scheduled.</p>'; return; }
 
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const startHour=8,endHour=21;
-  const todayISO = new Date().toISOString().slice(0,10);
+    let weekStartDate = baseDate ? weekStart(baseDate) : weekStart(entries[0].date);
 
-  let grid=document.createElement('div'); grid.className='timetable';
-  grid.appendChild(divCell('','header'));
-  for(let d=0;d<7;d++){
-    let dayDate=new Date(weekStartDate); dayDate.setDate(weekStartDate.getDate()+d);
-    let dayStr=days[d]+" "+dayDate.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit'});
-    let headerCell = divCell(dayStr,'header');
-    if(dayDate.toISOString().slice(0,10) === todayISO) headerCell.classList.add('today');
-    grid.appendChild(headerCell);
-  }
+    const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const startHour=8,endHour=21;
 
-  for(let h=startHour;h<endHour;h++){
-    grid.appendChild(divCell(h+":00",'header'));
+    let grid=document.createElement('div'); grid.className='timetable';
+    grid.appendChild(divCell('','header'));
     for(let d=0;d<7;d++){
-      let cell=divCell('','cell');
-      let currentDate=new Date(weekStartDate); currentDate.setDate(weekStartDate.getDate()+d);
-      let currentDateISO=currentDate.toISOString().slice(0,10);
-      entriesInWeek.forEach(e=>{
-        if(e.date===currentDateISO){
-          let sh=parseInt(e.start.split(':')[0]), eh=parseInt(e.end.split(':')[0]);
-          if(h>=sh && h<eh){
-            let block=document.createElement('div');
-            block.className="lecture-block "+(e.status==='Part-Time'?'lecture-part':'lecture-full');
-            block.innerHTML=`${e.subject}<br>${e.lab}`;
-            if(isAdmin){
-              let del=document.createElement('button');
-              del.className="delete-btn";
-              del.innerHTML="✖";
-              del.onclick=()=>{
-                let data=load();
-                data.splice(data.findIndex(x=>JSON.stringify(x)===JSON.stringify(e)),1);
-                save(data);
-                showBanner("Lecture deleted","success");
-                renderTimetable(lecturer, weekStartDate);
-                initLecturerOptions();
-              };
-              block.appendChild(del);
-            }
-            cell.appendChild(block);
-          }
-        }
-      });
-      grid.appendChild(cell);
+      let dayDate=new Date(weekStartDate); dayDate.setDate(weekStartDate.getDate()+d);
+      let dayStr=days[d]+" "+dayDate.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit'});
+      grid.appendChild(divCell(dayStr,'header'));
     }
-  }
-  timetable.appendChild(grid);
+
+    for(let h=startHour;h<endHour;h++){
+      grid.appendChild(divCell(h+":00",'header'));
+      for(let d=0;d<7;d++){
+        let cell=divCell('','cell');
+        let currentDate=new Date(weekStartDate); currentDate.setDate(weekStartDate.getDate()+d);
+        let currentDateISO=currentDate.toISOString().slice(0,10);
+        entries.forEach(e=>{
+          if(e.date===currentDateISO){
+            let sh=parseInt(e.start.split(':')[0]), eh=parseInt(e.end.split(':')[0]);
+            if(h>=sh && h<eh){
+              cell.innerHTML=`<div class="lecture-block">${e.subject}<br>${e.lab}</div>`;
+            }
+          }
+        });
+        grid.appendChild(cell);
+      }
+    }
+    timetable.appendChild(grid);
+  });
 }
 
-function showWeek(){
-  let lecturer = el('timetableLecturer').value;
-  let month = el('timetableMonth').value;
-  let week = el('timetableWeek').value;
-  if(!lecturer || !month || !week) return;
-  let base = monthWeekStart(month, week);
+el('showWeekBtn').onclick=()=>{
+  let lecturer=el('timetableLecturer').value;
+  let month=el('timetableMonth').value;
+  let week=el('timetableWeek').value;
+  if(!lecturer || !month || !week){ showBanner('Select lecturer, month, and week'); return; }
+  let base=new Date(month+"-01"); base.setDate((week-1)*7 + 1); 
   renderTimetable(lecturer, base);
-}
-
-el('timetableLecturer').onchange = showWeek;
-el('timetableMonth').onchange = showWeek;
-el('timetableWeek').onchange = showWeek;
+};
 
 el('addBtn').onclick=()=>{
   let lecturer=el('lecturer').value.trim();
@@ -187,45 +182,53 @@ el('addBtn').onclick=()=>{
   if(!lecturer||!subject||!lab||!date||!start||!end){ showBanner('All fields required'); return; }
   if(end<=start){ showBanner('End time must be after start time'); return; }
 
-  let data=load();
-  let newEntry={lecturer,status,subject,lab,date,start,end};
+  db.ref("lectures").once("value").then(snapshot=>{
+    let data = Object.values(snapshot.val()||{});
+    let newEntry={lecturer,status,subject,lab,date,start,end};
 
-  for(let e of data){ if(e.lecturer===lecturer && e.date===date && overlap(start,end,e.start,e.end)){ showBanner('Overlap with existing lecture for this lecturer'); return; } }
-  for(let e of data){ if(e.lab===lab && e.date===date && overlap(start,end,e.start,e.end)){ showBanner('Lab already in use at this time'); return; } }
+    // rule: no overlap for same lecturer
+    for(let e of data){ if(e.lecturer===lecturer && e.date===date && overlap(start,end,e.start,e.end)){ showBanner('Overlap with existing lecture for this lecturer'); return; } }
+    // rule: no overlap for same lab
+    for(let e of data){ if(e.lab===lab && e.date===date && overlap(start,end,e.start,e.end)){ showBanner('Lab already in use at this time'); return; } }
+    // rule: weekly hour limit
+    let week=weekStart(date); 
+    let weekEntries=data.filter(x=>x.lecturer===lecturer && weekStart(x.date).getTime()===week.getTime());
+    let total=weekEntries.reduce((a,c)=>a+hoursBetween(c.start,c.end),0)+hoursBetween(start,end);
+    let max=status==='Part-Time'?15:45;
+    if(total>max){ showBanner(`${status} limit exceeded (${total} hrs, max ${max})`); return; }
 
-  let week=weekStart(date); 
-  let weekEntries=data.filter(x=>x.lecturer===lecturer && weekStart(x.date).getTime()===week.getTime());
-  let total=weekEntries.reduce((a,c)=>a+hoursBetween(c.start,c.end),0)+hoursBetween(start,end);
-  let max=status==='Part-Time'?15:45;
-  if(total>max){ showBanner(`${status} limit exceeded (${total} hrs, max ${max})`); return; }
-
-  data.push(newEntry); save(data);
-  showBanner('Lecture added','success');
-  initLecturerOptions();
-  showWeek();
+    // Save new entry
+    db.ref("lectures").push(newEntry).then(()=>{
+      showBanner('Lecture added','success');
+      initLecturerOptions(data.concat(newEntry));
+    });
+  });
 };
 
 el('loginBtn').onclick=()=>{
   let p = prompt("Enter admin password:");
   if(p === ADMIN_PASS){
-    isAdmin = true;
     el('formArea').style.display="block";
     el('loginArea').style.display="none";
-    showBanner("Admin logged in. You can now add/delete lectures.","success");
+    showBanner("Admin logged in. You can now add lectures and view timetable.","success");
   } else {
     showBanner("Wrong password. View-only mode.","error");
   }
 };
 
 el('logoutBtn').onclick=()=>{
-  isAdmin = false;
   el('formArea').style.display="none";
   el('loginArea').style.display="block";
   showBanner("Logged out. View-only mode.","success");
 };
 
+// init labs list
 let labSel=el('lab'); LABS.forEach(l=>{ let o=document.createElement('option'); o.value=o.text=l; labSel.add(o); });
-initLecturerOptions();
+
+// init lecturers list from Firebase
+db.ref("lectures").once("value").then(snapshot=>{
+  initLecturerOptions(Object.values(snapshot.val()||{}));
+});
 </script>
 </body>
 </html>
